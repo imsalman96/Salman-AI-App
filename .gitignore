@@ -1,0 +1,40 @@
+# Gradle files
+.gradle/
+build/
+
+# Local configuration
+local.properties
+
+# IDE files
+.idea/
+*.iml
+
+# Log files
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Generated files
+captures/
+outputs/
+.externalNativeBuild/
+
+# Keystore files (never upload these)
+*.jks
+
+# APKs
+*.apk
+*.ap_
+
+# Others
+*.class
+*.dex
+
+# Crashlytics
+crashlytics.properties
+fabric.properties
+
+# Google Services
+google-services.json
