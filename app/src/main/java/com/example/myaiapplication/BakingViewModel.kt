@@ -12,37 +12,33 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class BakingViewModel : ViewModel() {
-    private val _uiState: MutableStateFlow<UiState> =
-        MutableStateFlow(UiState.Initial)
-    val uiState: StateFlow<UiState> =
-        _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<UiState>(UiState.Initial)
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     private val generativeModel = GenerativeModel(
         modelName = "gemini-1.5-flash",
         apiKey = BuildConfig.apiKey
     )
 
-    fun sendPrompt(
-        bitmap: Bitmap?,
-        prompt: String
-    ) {
+    fun sendPrompt(bitmap: Bitmap?, prompt: String) {
+        if (prompt.isBlank()) return
         _uiState.value = UiState.Loading
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = generativeModel.generateContent(
                     content {
-                        if (bitmap != null) {
-                            image(bitmap)
-                        }
-                        text(prompt)
+                        if (bitmap != null) image(bitmap)
+                        text(prompt.trim())
                     }
                 )
-                response.text?.let { outputContent ->
-                    _uiState.value = UiState.Success(outputContent)
+                response.text?.let { output ->
+                    _uiState.value = UiState.Success(output)
+                } ?: run {
+                    _uiState.value = UiState.Error("Empty response received")
                 }
             } catch (e: Exception) {
-                _uiState.value = UiState.Error(e.localizedMessage ?: "")
+                _uiState.value = UiState.Error(e.localizedMessage ?: "Unknown error")
             }
         }
     }
